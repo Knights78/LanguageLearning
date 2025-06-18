@@ -8,4 +8,10 @@ router.post('/signin',signin)
 router.post('/logout',logout)
 
 router.post('/onboarding',protectedRoute,onboard)
+router.get('/me',protectedRoute,(req,res)=>{
+    res.status(200).json({
+        success: true,
+        user: req.user, // The user is attached to the request object by the protectedRoute middleware
+    });
+})
 export default router;
