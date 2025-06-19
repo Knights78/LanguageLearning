@@ -1,5 +1,6 @@
 import "dotenv/config";
 import {StreamChat} from "stream-chat";
+
 const apiKey = process.env.STEAM_API_KEY;
 const apiSecret = process.env.STEAM_API_SECRET;
 if(!apiKey || !apiSecret)
@@ -27,7 +28,17 @@ export const upsertStreamUser=async(userData)=>{
     }
 }
 export const generateStreamToken=async(userId)=>{
-    
+    try {
+        //generate the toekn using streamClient 
+        const userIdstr=userId.toString();
+        const token = streamClient.createToken(userIdstr);
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error generating Stream token",
+            success: false,
+            error: error.message,
+        });
+    }
 }
 
 

@@ -1,4 +1,5 @@
 import User from "../models/User.js"; 
+import FriendRequest from "../models/FriendRequest.js";
 export async function getRecommendedUsers(req, res) {
     try {
         //after this fetch the data from the database
@@ -50,3 +51,142 @@ export async function getMyFriends(req, res) {
         return res.status(500).json({ message: "Internal server error" });
     }
 }
+export  async function sendFriendRequest(req, res) {
+    try{
+        const myId = req.user._id;
+    const { id: recipientId } = req.params;
+
+    // prevent sending req to yourself
+    if (myId === recipientId) {
+      return res.status(400).json({ message: "You can't send friend request to yourself" });
+    }
+
+    const recipient = await User.findById(recipientId);
+    if (!recipient) {
+      return res.status(404).json({ message: "Recipient not found" });
+    }
+
+    // check if user is already friends
+    if (recipient.friends.includes(myId)) {
+      return res.status(400).json({ message: "You are already friends with this user" });
+    }
+
+    // check if a req already exists
+    const existingRequest = await FriendRequest.findOne({
+      $or: [
+        { sender: myId, recipient: recipientId },
+        { sender: recipientId, recipient: myId },
+      ],
+    });
+
+    if (existingRequest) {
+      return res
+        .status(400)
+        .json({ message: "A friend request already exists between you and this user" });
+    }
+
+    const friendRequest = await FriendRequest.create({
+      sender: myId,
+      recipient: recipientId,
+    });
+    return res.status(201).json({
+      message: "Friend request sent successfully",
+      success: true,
+      friendRequest,})
+    }
+    catch{
+        console.log("Error in sending friend request:", error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}
+export async function acceptFriendRequest(req, res) {
+    try {
+        const { id: requestId } = req.params;
+        const { decision } = req.body; // 'accept' or 'reject'
+        const myId = req.user._id;
+
+        const friendRequest = await FriendRequest.findById(requestId);
+        if (!friendRequest) {
+            return res.status(404).json({ message: "Friend request not found" });
+        }
+
+        if (friendRequest.recipient.toString() !== myId.toString()) {//this is checking ki recipient id tumhara he hai na agar nhi mtlb koi aur sender hai
+            return res.status(403).json({ message: "You are not authorized to respond to this friend request" });
+        }
+
+        if (decision === "accept") {
+            friendRequest.status = "accepted";
+            await friendRequest.save();
+
+            // Add each user to the other's friends list
+            await User.findByIdAndUpdate(myId, {
+                $addToSet: { friends: friendRequest.sender }
+            });
+            await User.findByIdAndUpdate(friendRequest.sender, {
+                $addToSet: { friends: myId }
+            });
+
+            return res.status(200).json({ message: "Friend request accepted" });
+        } 
+        else if (decision === "reject") {
+            friendRequest.status = "rejected";
+            await friendRequest.save();
+
+            return res.status(200).json({ message: "Friend request rejected" });
+        } 
+        else {
+            return res.status(400).json({ message: "Invalid decision" });
+        }
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal server error while responding to friend request" });
+    }
+}
+//this funnction now will be used to see the pedning friend requests to me 
+//as well as in this status of other friend request will al trso be shown here 
+export async function getFriendRequests(req, res) {
+    try {
+        //jitni bhi friend request tumhe aayi hai unhe fetch karlo
+        const incomingReq=await FriendRequest.find({
+            recipient: req.user._id,
+            status: "pending"
+        }).populate("sender", "fullName profilePic nativeLanguage learningLanguage");
+        //now i need to see the status of all the requests which i have sent 
+        const acceptedReq = await FriendRequest.find({
+            sender: req.user._id,
+            status: "accepted"
+        }).populate("recipient", "fullName profilePic");
+
+        const rejectedReq = await FriendRequest.find({
+            sender: req.user._id,
+            status: "rejected"
+        }).populate("recipient", "fullName profilePic");
+        return res.status(200).json({
+            message: "Friend requests fetched successfully",
+            success: true,
+            incomingRequests: incomingReq,
+            acceptedRequests: acceptedReq,
+            rejectedRequests: rejectedReq
+        });
+    } catch (error) {
+        return res.status(500).json({ message: "Internal server error while fetching friend requests" });
+    }
+}
+export async function getOutgoingFriendReqs(req, res) {
+    try {
+      const outgoingRequests = await FriendRequest.find({
+        sender: req.user.id,
+        status: "pending",
+      }).populate("recipient", "fullName profilePic nativeLanguage learningLanguage");
+  
+      res.status(200).json({
+        message: "Outgoing friend requests fetched successfully",
+        success: true,
+        outgoingRequests,
+      });
+    } catch (error) {
+      console.log("Error in getOutgoingFriendReqs controller", error.message);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
