@@ -1,5 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import cors from 'cors';
 import { connectDB } from './lib/db.js';
 import authRoutes from './routes/auth.route.js';
 import cookieParser from 'cookie-parser'; 
@@ -8,6 +9,10 @@ import chatRoutes from './routes/chat.route.js';
 dotenv.config();
 const PORT=process.env.PORT || 5000;
 const app = express();
+app.use(cors({
+  origin:"http://localhost:5173", // Replace with your frontend URL
+  credentials: true, // Allow credentials (cookies, authorization headers, etc.)
+}))
 app.use(express.json()); 
 app.use(cookieParser());
  // Middleware to parse cookies
