@@ -13,7 +13,7 @@ const SignUpPage = () => {
     password: "",
   });
   const queryClient = useQueryClient();
-  const {error, isPending, mutate} = useMutation({
+  const {error, isPending, mutate:signupMutation} = useMutation({
     mutationFn: signup,
     //if everything is sucess then we need to refetch the authenticated user data
     onSuccess:()=>{
@@ -22,7 +22,7 @@ const SignUpPage = () => {
   })
   const handleSignup = (e) => {
     e.preventDefault(); 
-    mutate(signupData)
+    signupMutation(signupData)
   }
   
   return (
