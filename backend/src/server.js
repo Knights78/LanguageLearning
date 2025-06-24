@@ -17,7 +17,7 @@ app.use(express.json());
 app.use(cookieParser());
  // Middleware to parse cookies
 app.use("/api/auth",authRoutes) // Middleware to parse JSON bodies
-app.use("/api/users",userRoutes)
+app.use("/api/user",userRoutes)
 app.use('/api/chat',chatRoutes)
 app.listen(PORT, () => {
   console.log('Server is running on port 5000');

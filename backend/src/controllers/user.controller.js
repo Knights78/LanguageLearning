@@ -16,6 +16,7 @@ export async function getRecommendedUsers(req, res) {
                 { _id: { $nin: user.friends } } // Exclude friends of the current user
             ]
         }).select("-password"); // Exclude password from the results
+        console.log("Recommended users:", recommendedUsers.length);
         res.status(200).json({
             message: "Recommended users fetched successfully",
             success: true,
@@ -33,7 +34,7 @@ export async function getMyFriends(req, res) {
     try {
         //after this fetch the data from the database 
         const userId = req.user._id; // Get the user ID from the request object
-        const user = await User.findById(userId).select("friends").populate("friends","fullName profilePic nativeLanguage learningLanguage",); // Fetch the user without password
+        const user = await User.findById(userId).select("friends").populate("friends","fullName profilePic nativeLanguage learningLanguage"); // Fetch the user without password
         //after getting the user fetch the friends array of the user 
         res.status(200).json({
             message: "Friends fetched successfully",
@@ -176,10 +177,10 @@ export async function getFriendRequests(req, res) {
 export async function getOutgoingFriendReqs(req, res) {
     try {
       const outgoingRequests = await FriendRequest.find({
-        sender: req.user.id,
+        sender: req.user._id,
         status: "pending",
       }).populate("recipient", "fullName profilePic nativeLanguage learningLanguage");
-  
+      
       res.status(200).json({
         message: "Outgoing friend requests fetched successfully",
         success: true,

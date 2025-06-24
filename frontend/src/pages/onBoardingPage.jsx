@@ -4,6 +4,7 @@ import useAuthUser from '../hooks/useAuthUser.js'
 import { LANGUAGES } from '../constants/index.js'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { completeOnboarding } from '../lib/api.js'
+import { LoaderIcon } from 'lucide-react'
 import toast from 'react-hot-toast'
 const onBoardingPage = () => {
   const {authUser} = useAuthUser()
@@ -19,8 +20,7 @@ const onBoardingPage = () => {
   });
 
 const {mutate:onboardingMutation,isPending}=useMutation({
-  queryKey: ['onboarding'],
-  mutatationFn: completeOnboarding,
+  mutationFn: completeOnboarding,
   onSuccess:()=>{
     toast.success("Onboarding completed successfully!");
     queryClient.invalidateQueries({queryKey: ['authUser']}) // Invalidate authUser query to refresh data
@@ -31,7 +31,7 @@ const {mutate:onboardingMutation,isPending}=useMutation({
 })
 const handleRandomAvatar = () => {
   const idx = Math.floor(Math.random() * 100) + 1; // 1-100 included
-    const randomAvatar = `https://avatar.iran.liara.run/public/${idx}.png`;
+    const randomAvatar = `https://api.dicebear.com/7.x/avataaars/svg?seed=${idx}`;
   //console.log(randomAvatar);
     setFormState({ ...formState, profilePic: randomAvatar });
     toast.success("Random profile picture generated!");
@@ -41,7 +41,7 @@ const handleRandomAvatar = () => {
     onboardingMutation(formState)
   }
   return (
-    <div className="min-h-screen bg-base-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-base-100 flex items-center justify-center p-4 ">
       <div className="card bg-base-200 w-full max-w-3xl shadow-xl">
         <div className="card-body p-6 sm:p-8">
           <h1 className="text-2xl sm:text-3xl font-bold text-center mb-6">Complete Your Profile</h1>
@@ -55,7 +55,7 @@ const handleRandomAvatar = () => {
                   <img
                     src={formState.profilePic}
                     alt="Profile Preview"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover block"
                   />
                 ) : (
                   <div className="flex items-center justify-center h-full">

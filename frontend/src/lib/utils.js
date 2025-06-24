@@ -1,0 +1,2 @@
+export const capitialize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
+//this is  a utility function to capitalize the first letter of a string str.slice (1) is used to get the rest of the string after the first letter

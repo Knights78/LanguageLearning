@@ -8,8 +8,8 @@ const router = express.Router();
 //and the friends which i have will be shown
 //for this we need to have 2 routes 
 router.use(protectedRoute)
-router.get('/getfriends',getRecommendedUsers);
-router.get('/friends',getMyFriends);
+router.get('/getfriends',getMyFriends);
+router.get('/getUsers',getRecommendedUsers);
 router.post('/friend-request/:id',sendFriendRequest)
 router.put('/friend-request/:id/accept',acceptFriendRequest);
 router.get('/friend-request',getFriendRequests);
