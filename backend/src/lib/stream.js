@@ -32,6 +32,7 @@ export const generateStreamToken=async(userId)=>{
         //generate the toekn using streamClient 
         const userIdstr=userId.toString();
         const token = streamClient.createToken(userIdstr);
+        return token;
     } catch (error) {
         return res.status(500).json({
             message: "Error generating Stream token",

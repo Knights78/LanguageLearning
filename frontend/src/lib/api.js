@@ -36,9 +36,24 @@ export const getMyFriends = async () => {
 }
 export const getOutgoingFriendReqs = async () => {  
   const res = await axiosInstance.get('/user/outgoing-requests');
-  return res.data;
+  return res.data.outgoingRequests;
 }
 export const sendFriendRequest = async (recipientId) => {
   const res = await axiosInstance.post(`/user/friend-request/${recipientId}`);
+  return res.data.friendRequest;
+}
+export const getFriendRequests = async () => {
+  const res = await axiosInstance.get('/user/friend-request');
+  return res.data;//return all frend request accept and rejected as well;
+}
+export const respondToFriendRequest = async ({ id, decision }) => {
+  const res = await axiosInstance.put(`/user/friend-request/${id}/accept`, {
+    decision,
+  });
+  return res.data; // this includes { message: "..." }
+};
+export const getStreamToken = async () => {
+  const res = await axiosInstance.get('/chat/token');
   return res.data;
 }
+

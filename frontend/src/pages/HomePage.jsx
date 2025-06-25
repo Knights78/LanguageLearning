@@ -13,7 +13,9 @@ import { useMutation } from '@tanstack/react-query';
 import { getLanguageFlag } from '../components/FriendCard.jsx';
 import FriendCard from '../components/FriendCard.jsx';
 import NoFriendsFound from '../components/NoFriendsFound.jsx';
+import { toast } from 'react-hot-toast';
 import { capitialize} from '../lib/utils.js';
+
 const HomePage = () => {
   const [outgoingRequests, setOutgoingRequests] = useState(new  Set());//this is used to store the request which user has send it will store the id and we wll make it disable whenever user comes back agaiian
 
@@ -46,10 +48,12 @@ const HomePage = () => {
     const outgoing=new Set();
     if(outgoingReq.length>0){
       outgoingReq.forEach((req)=>{
-        outgoing.add(req._id);
+      // console.log("REQQQ",req)
+        outgoing.add(req.recipient._id);
       })
+      setOutgoingRequests(outgoing);
     }
-    setOutgoingRequests(outgoing);
+    
   },[outgoingReq])
 
 
