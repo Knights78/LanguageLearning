@@ -1,0 +1,13 @@
+{
+  "name": "languagelearn",
+  "version": "1.0.0",
+  "description": "This backend is built using **Node.js**, **Express.js**, and **MongoDB**. It provides APIs for authentication, user management, and other project-specific functionalities.",
+  "main": "index.js",
+  "scripts": {
+    "build":"npm install --prefix backend && npm install --prefix frontend && npm run build --prefix frontend",
+    "start":"npm run start --prefix backend"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
