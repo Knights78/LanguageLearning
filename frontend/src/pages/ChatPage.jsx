@@ -108,47 +108,20 @@ const ChatPage = () => {
 
     return (
         <div className="h-[93vh]">
-            <Chat client={chatClient}>
-                <Channel channel={channel}>
-                    {/* The main chat window container */}
-                    <Window>
-                        {/* Custom Header with language select and call button */}
-                        <div className="flex items-center justify-between p-2 border-b border-gray-200">
-                            {/* Original ChannelHeader, or a custom one if needed */}
-                            {/* You can integrate ChannelHeader's functionality here, or remove it if building fully custom */}
-                            <ChannelHeader />
-                            <div className='flex items-center gap-4 px-4 bg-white'> {/* Added padding and gap for spacing */}
-                                <select
-                                    value={preferredLang}
-                                    onChange={handleLangChange}
-                                    className="bg-white border border-gray-300 p-2 rounded text-sm shadow-sm" // Added some styling
-                                >
-                                    {languages.map((lang) => (
-                                        <option key={lang.code} value={lang.code}>
-                                            {lang.label}
-                                        </option>
-                                    ))}
-                                </select>
-                                <CallButton handleVideoCall={handleVideoCall} />
-                            </div>
-                        </div>
-
-                        {/* MessageList and MessageInput should be within the Window */}
-                        <MessageList
-                            Message={(props) => (
-                                <TranslatedMessage
-                                    {...props}
-                                    preferredLang={preferredLang}
-                                    authUserId={authUser._id}
-                                />
-                            )}
-                        />
-                        <MessageInput focus />
-                    </Window>
-                    <Thread />
-                </Channel>
-            </Chat>
-        </div>
+      <Chat client={chatClient}>
+        <Channel channel={channel}>
+          <div className="w-full relative">
+            <CallButton handleVideoCall={handleVideoCall} />
+            <Window>
+              <ChannelHeader />
+              <MessageList />
+              <MessageInput focus />
+            </Window>
+          </div>
+          <Thread />
+        </Channel>
+      </Chat>
+    </div>
     );
 };
 
